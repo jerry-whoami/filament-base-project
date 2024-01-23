@@ -3,6 +3,9 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Toggle;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -21,6 +24,28 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
+  public function boot(): void
+  {
+    DateTimePicker::configureUsing(function (DateTimePicker $field) {
+      $field
+        ->native(false)
+        ->displayFormat(config('appx.dateTimeFormat.display.dateTime'))
+        ->format(config('appx.dateTimeFormat.database.dateTime'));
+    });
+
+    DatePicker::configureUsing(function (DatePicker $field) {
+      $field
+        ->native(false)
+        ->displayFormat(config('appx.dateTimeFormat.display.date'))
+        ->format(config('appx.dateTimeFormat.database.date'));
+    });
+
+    Toggle::configureUsing(function (Toggle $field) {
+      $field
+        ->inline(false);
+    });
+  }
+
   public function panel(Panel $panel): Panel
   {
     return $panel
