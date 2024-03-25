@@ -1,5 +1,6 @@
 services:
     laravel.test:
+        container_name: activos-app
         build:
             context: ./vendor/laravel/sail/runtimes/8.2
             dockerfile: Dockerfile
@@ -20,11 +21,12 @@ services:
         volumes:
             - '.:/var/www/html'
         networks:
-            - sail
+            - activos-sail
         depends_on:
             - mysql
             - mailpit
     mysql:
+        container_name: activos-mysql
         image: 'mysql/mysql-server:8.0'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
@@ -36,10 +38,10 @@ services:
             MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
-            - 'sail-mysql:/var/lib/mysql'
+            - './mysqldb:/var/lib/mysql'
             - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
-            - sail
+            - activos-sail
         healthcheck:
             test:
                 - CMD
@@ -49,13 +51,15 @@ services:
             retries: 3
             timeout: 5s
     mailpit:
+        container_name: activos-mailpit
         image: 'axllent/mailpit:latest'
         ports:
             - '${FORWARD_MAILPIT_PORT:-1025}:1025'
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
-            - sail
+            - activos-sail
     phpmyadmin:
+        container_name: activos-phpmyadmin
         image: phpmyadmin/phpmyadmin
         links:
             - mysql:mysql
@@ -66,11 +70,11 @@ services:
             MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
             PMA_HOST: mysql
         networks:
-            - sail
+            - activos-sail
         depends_on:
             - mysql
 networks:
-    sail:
+    activos-sail:
         driver: bridge
 volumes:
     sail-mysql:
